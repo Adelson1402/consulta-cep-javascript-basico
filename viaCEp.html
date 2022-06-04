@@ -1,0 +1,227 @@
+<html>
+    <head>
+    <title>Consulta de Cep</title>
+    <link rel="icon" href="https://cdn.icon-icons.com/icons2/1814/PNG/512/22map_115452.png">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <style>
+
+        .form{
+
+            margin-top: 100px;
+            width: 700px; 
+            margin-left: 100px;
+            margin-right: auto; 
+            
+        }
+
+        .div-form{
+
+            width: 700px;
+
+            border:  solid 1px lightblue;
+            border-radius: 15px;
+
+            display: flex;
+
+            align-content: center;
+
+            margin-top:  20px;
+            margin-left: auto;
+            margin-right: auto; 
+            align-content: center;
+            box-shadow: 15px 15px 15px black;
+            
+        }
+
+        .body {
+          opacity: 0.5;  
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          position: fixed;
+          background-color: rgba(0, 0, 0, 0.5);
+
+        }
+
+        #spinner{
+            display: flex;
+            ;
+            margin-top:  20%;
+            margin-left: auto;
+            margin-right: auto; 
+        }
+
+
+    </style>
+
+    <script>
+
+
+    function hiddenFields(){
+       const toHide =  document.getElementsByClassName('hidden');
+
+       document.getElementById('spinner').hidden = true;
+
+       for(let e of toHide){
+        e.hidden = true;
+       }
+        
+    }
+
+    function loading(){
+        const body = document.getElementsByClassName('div-form');
+
+        for(let b of body){
+        
+         b.style.display = "none";
+
+         document.getElementById('spinner').hidden = false;
+
+       }
+    }
+
+    function showBody(){
+        const body = document.getElementsByClassName('div-form');
+
+        for(let b of body){
+        
+         b.style.display = "";
+
+         document.getElementById('spinner').hidden = true;
+
+       }
+    }
+
+
+    function ShowFields(json){
+       const toHide =  document.getElementsByClassName('hidden');
+
+
+       if(!json.logradouro && !json.uf){
+        alert('CEP NÃO ENCONTRADO\n FAÇA OUTRA BUSCA');
+        return;
+       }
+
+       loading();
+
+        setTimeout(function(){
+            showBody();
+        },2000);
+
+       
+
+       for(let e of toHide){
+        e.hidden = false;
+       }
+
+           document.getElementById('rua').value = json.logradouro;
+           document.getElementById('bairro').value = json.bairro;
+           document.getElementById('cidade').value = json.localidade;
+           document.getElementById('uf').value = json.uf;
+           document.getElementById('ibge').value = json.ibge;
+        
+    }
+
+    function isLetter(str) {
+       return str.length === 1 && str.match(/[a-zA-Z]/i);
+    }
+
+    function isDigit(str) {
+        return str.length === 1 && str.match(/[0-9]/i);
+    }    
+
+    async function getCep(value){
+
+        for (let c of value) {
+            
+            if (!isDigit(c)) {
+                alert('o cep não pode conter caracteres especiais ou letras!');
+                return;
+            }
+        }
+
+        if(value == undefined || value.length === 0){
+            alert('Preencha o campo de cep');
+            return;
+        }
+
+
+       const response =  await fetch('https://viacep.com.br/ws/'+value+'/json/');
+
+       if (response.ok) {
+      
+           let json = await response.json();
+
+            ShowFields(json);
+
+
+        } else {
+          alert("HTTP-Error: " + response.status);
+        }
+   }
+
+    </script>
+
+    </head>
+
+    <body>
+    
+
+     <div class="div-form">
+
+      <form method="get" action="." style="width: 700px;" class="form">
+
+        <div class="center"><span>Pesquisa CEP</span></div>
+
+        <div class="input-group mb-3" style="width: 300px;">
+          <span class="input-group-text" id="basic-addon1">CEP</span>
+          <input type="text" class="form-control" placeholder="Insira o CEP aqui" aria-label="CEP" id="cep" maxlength = "8" aria-describedby="basic-addon1" >
+        </div>
+
+        <div class="input-group mb-3 hidden" style="width: 500px;">
+          <span class="input-group-text" id="basic-addon1">RUA</span>
+          <input type="text" class="form-control" aria-label="rua" id="rua" readonly aria-describedby="basic-addon1" >
+        </div>
+
+        <div class="input-group mb-3 hidden" style="width: 500px;">
+          <span class="input-group-text" id="basic-addon1">BAIRRO</span>
+          <input type="text" class="form-control" aria-label="bairro" id="bairro" readonly aria-describedby="basic-addon1" >
+        </div>
+
+        <div class="input-group mb-3 hidden" style="width: 500px;">
+          <span class="input-group-text" id="basic-addon1">CIDADE</span>
+          <input type="text" class="form-control" aria-label="cidade" id="cidade" readonly aria-describedby="basic-addon1" >
+        </div>
+
+
+       <div class="input-group mb-3 hidden" style="width: 500px;">
+          <span class="input-group-text" id="basic-addon1">ESTADO</span>
+          <input type="text" class="form-control" aria-label="estado" id="uf" readonly aria-describedby="basic-addon1" >
+        </div>
+
+        <input type="button" name="btn" value="Buscar" class="btn btn-primary" onclick="getCep(document.getElementById('cep').value);">
+      </form>
+
+     </div>
+
+      <div class="spinner-grow text-primary" id="spinner" role="status">
+       <span class="visually-hidden">Loading...</span>
+      </div>
+      
+      <script>
+
+         //var via = '08775060';
+
+         window.onload = hiddenFields();
+      </script>
+
+    </body>
+
+    </html>
