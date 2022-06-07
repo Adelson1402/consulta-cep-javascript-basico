@@ -63,10 +63,6 @@ function hiddenFields(){
      
  }
 
- function isLetter(str) {
-    return str.length === 1 && str.match(/[a-zA-Z]/i);
- }
-
  function isDigit(str) {
      return str.length === 1 && str.match(/[0-9]/i);
  }    
